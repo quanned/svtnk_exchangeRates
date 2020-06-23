@@ -7,6 +7,14 @@
         mc:Ignorable="d"
         Title="svitanak exchange rates" Height="350" Width="525" WindowStartupLocation="CenterScreen" FontFamily="Roboto" BorderThickness="1">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="191*"/>
+            <ColumnDefinition Width="324*"/>
+        </Grid.ColumnDefinitions>
+        <ListBox x:Name="LB" Margin="3,10,10,10" Grid.Column="1"/>
+        <DatePicker x:Name="DP" Margin="10,10,2,0" Height="25" VerticalAlignment="Top"/>
+        <Button x:Name="PickDate" Content="Pick" Margin="10,40,2,0" Height="25" VerticalAlignment="Top"/>
+        <ListBox x:Name="TempLB" Margin="10,70,2,10"/>
+
     </Grid>
 </Window>

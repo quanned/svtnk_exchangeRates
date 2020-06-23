@@ -4,7 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace NbrbAPI.Models
+namespace svtnk_exchangeRates
+//namespace NbrbAPI.Models
 {
     public class Currency
     {
