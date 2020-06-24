@@ -11,12 +11,12 @@
             <ColumnDefinition Width="73*"/>
             <ColumnDefinition Width="172*"/>
         </Grid.ColumnDefinitions>
-        <ListBox x:Name="LB" Margin="3,5,5,0" Grid.Column="1" Height="174" VerticalAlignment="Top"/>
+        <ListBox x:Name="LB" Margin="3,5,5,0" Grid.Column="1" Height="174" VerticalAlignment="Top" IsEnabled="False" IsTextSearchEnabled="False"/>
         <DatePicker x:Name="DP" Margin="5,5,2,0" Height="25" VerticalAlignment="Top" Text="asd"/>
         <Button x:Name="PickDate" Content="Get rates from NBRB.BY" Margin="5,35,2,0" Height="25" VerticalAlignment="Top"/>
-        <ListBox x:Name="TempLB" Margin="5,65,2,30"/>
+        <ListBox x:Name="TempLB" Margin="5,65,2,30" IsEnabled="False" IsTextSearchEnabled="False"/>
         <Button x:Name="WriteBtn" Content="Write in SPRVAL" Margin="5,0,2,5" Height="20" VerticalAlignment="Bottom"/>
-        <TextBlock x:Name="TB" Grid.Column="1" HorizontalAlignment="Left" Margin="3,184,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="196" Width="438"/>
+        <TextBlock x:Name="TB" Grid.Column="1" HorizontalAlignment="Left" Margin="3,184,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="228" Width="476"/>
 
     </Grid>
 </Window>

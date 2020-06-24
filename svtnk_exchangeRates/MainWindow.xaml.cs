@@ -42,18 +42,21 @@ namespace svtnk_exchangeRates
             //}
             
             DateTime thisDay = DateTime.Today;
-            DP.Text = thisDay.ToString();
+            MessageBox.Show(thisDay.ToString());
+            DP.SelectedDate = thisDay;
+            //DP.BlackoutDates.AddDatesInPast();
+            //DP.BlackoutDates.Add(new CalendarDateRange(DateTime.Now, DateTime.Now.AddDays(8)));
 
-            Data data = JsonConvert.DeserializeObject<Data>(json);
-            foreach (Item item in data.Rate.Items)
-            {
-                LB.Items.Add(new ListBoxItem() { Content = item });
-            }
+            Rate data = JsonConvert.DeserializeObject<Rate>(json);
+           
+                LB.Items.Add(new ListBoxItem() { Content = data });
+            
 
             int curIDStrCount = GetCurIDCount(pathToCurIDFile);
             if (curIDStrCount == 0)
             {
-                MessageBox.Show("Введите значения в файл" + pathToCurIDFile);
+                MessageBox.Show("Файл, содержащий список валют, необходимых к загрузке пуст/не существует/поврежден. \rPath: " + pathToCurIDFile, "Error", MessageBoxButton.OK);
+                Environment.Exit(0);
             }
             string[] curIDStrArray = new string[curIDStrCount];
             for (int i = 0; i < curIDStrCount; i++)
@@ -67,9 +70,22 @@ namespace svtnk_exchangeRates
 
         }
 
+        public string GetDataPickerDate()
+        {
+            string date = DP.Text;
+            return 0.ToString();
+        }
+
         static string GetJSON(string uri)
         {
+            WebRequest request = WebRequest.Create(uri);
+            return uri.ToString();
+        }
 
+        public string CreateApiLink(string curRateCode)
+        {
+            string date = GetDataPickerDate();
+           // string link = "https://www.nbrb.by/api/exrates/rates/" + curRateCode.ToString() + "?ondate" +
             return 0.ToString();
         }
 
@@ -112,7 +128,7 @@ namespace svtnk_exchangeRates
         }
 
 
-        const string pathToCurIDFile = @"D:\work\svtnk_exchangeRates\docs\rates.list";
+        const string pathToCurIDFile = @"D:\work\svitanak\svtnk_exchangeRates\docs\rates.list";
 
         public static int GetCurIDCount(string path)
         {
@@ -127,7 +143,7 @@ namespace svtnk_exchangeRates
                         i++;
                         Console.WriteLine(line);
                     }
-                    Console.WriteLine("Line counts:" + i.ToString());
+                    Console.WriteLine("Line counts: " + i.ToString());
                     return i;
                 }
             }
@@ -145,25 +161,6 @@ namespace svtnk_exchangeRates
 
             codeList = File.ReadAllLines(path);
             return codeList;
-
-            //using (StreamReader sr = new StreamReader(path))
-            //{
-            //    var list = new List<string>();
-            //    while (!sr.EndOfStream)
-            //    {
-            //        string line = sr.ReadLine();
-            //        list.Add(line);
-            //        Console.WriteLine(list[list.Count - 1]);
-            //    }
-
-            //    //Массив string[]              
-            //    var arrTheoria = list.ToArray();
-
-            //    for (int i = 1; i <= 6; i++)
-            //    {
-            //        codeList[i] = arrTheoria[i];
-            //    }
-            //}
         }
 
         //https://www.nbrb.by/api/exrates/rates/840?parammode=1
@@ -172,18 +169,9 @@ namespace svtnk_exchangeRates
         //https://www.nbrb.by/api/exrates/rates/USD?ondate=2016-7-5         выгоднее юзать это, применив знание госта в файле
 
 
-        class Data
+        public class Rate
         {
-            public Rate Rate;
-        }
-
-        class Rate
-        {
-            public Item[] Items;
-        }
-
-        class Item
-        {
+            //[Key]
             public int Cur_ID;
             public DateTime Date;
             public string Cur_Abbreviation;
@@ -199,27 +187,12 @@ namespace svtnk_exchangeRates
 
         //string json = @"";
         string json = @"{
-          ""rate"": {
-            ""items"": [
-              {
                 ""Cur_ID"": 170,
                 ""Date"": ""2016-07-06T00:00:00"",
                 ""Cur_Abbreviation"": ""AUD"",
                 ""Cur_Scale"": 1,
                 ""Cur_Name"": ""Австралийский доллар"",
-                ""Cur_OfficialRate"": 1.5039
-              },            
-              {
-                ""Cur_ID"": 130,
-                ""Date"": ""2016-07-06T00:00:00"",
-                ""Cur_Abbreviation"": ""CHF"",
-                ""Cur_Scale"": 1,
-                ""Cur_Name"": ""Швейцарский франк"",
-                ""Cur_OfficialRate"": 2.0641
-              }
-            ]
-          }
-        }";
+                ""Cur_OfficialRate"": 1.5039}";
 
     };
 }
