@@ -31,19 +31,24 @@ namespace svtnk_exchangeRates
         public MainWindow()
         {
             InitializeComponent();
-
-            if (CheckInternet().Equals(2))
+            //.Equals("NotConnected")
+            if (CheckInterneConection() == ConnectionStatus.NotConnected)
             {
                 MessageBox.Show("Проверьте доступ к Интернету", "Внимание", MessageBoxButton.OKCancel);
+                StatusBar.Items.Add("Connection status: " + ConnectionStatus.NotConnected.ToString());
             }
-            //else
-            //{
-            //    MessageBox.Show("все окэй", "Внимание", MessageBoxButton.OKCancel);
-            //}
+            else if (CheckInterneConection() == ConnectionStatus.LimitedAccess)
+            {
+                MessageBox.Show("Проверьте доступ к Интернету", "Внимание", MessageBoxButton.OKCancel);
+                StatusBar.Items.Add("Connection status: " + ConnectionStatus.LimitedAccess.ToString());
+            }
+            else StatusBar.Items.Add("Connection status: " + ConnectionStatus.Connected.ToString());
             
             DateTime thisDay = DateTime.Today;
-            MessageBox.Show(thisDay.ToString());
+            //MessageBox.Show(thisDay.ToString());
             DP.SelectedDate = thisDay;
+            DP.SelectedDateFormat = DatePickerFormat.Short;
+            
             //DP.BlackoutDates.AddDatesInPast();
             //DP.BlackoutDates.Add(new CalendarDateRange(DateTime.Now, DateTime.Now.AddDays(8)));
 
@@ -70,9 +75,10 @@ namespace svtnk_exchangeRates
 
         }
 
-        public string GetDataPickerDate()
+        public string GetFormatDataPickerDate()
         {
-            string date = DP.Text;
+            //DateTime date = DP.SelectedDate.ToString('yyyy-MM-dd');
+           
             return 0.ToString();
         }
 
@@ -84,8 +90,10 @@ namespace svtnk_exchangeRates
 
         public string CreateApiLink(string curRateCode)
         {
-            string date = GetDataPickerDate();
-           // string link = "https://www.nbrb.by/api/exrates/rates/" + curRateCode.ToString() + "?ondate" +
+            //string date = GetFormatDataPickerDate();
+            string link = "https://www.nbrb.by/api/exrates/rates/USD?ondate=2020-05-21&parammode=2";
+
+                //+ curRateCode.ToString() + "?ondate" +
             return 0.ToString();
         }
 
@@ -96,7 +104,8 @@ namespace svtnk_exchangeRates
             Connected
         }
 
-        public static ConnectionStatus CheckInternet()
+        //public static string CheckInterneConection()
+        public static ConnectionStatus CheckInterneConection()
         {
             // Проверить загрузку документа ncsi.txt
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("http://www.msftncsi.com/ncsi.txt");
@@ -106,13 +115,13 @@ namespace svtnk_exchangeRates
 
                 if (responce.StatusCode != HttpStatusCode.OK)
                 {
-                    return ConnectionStatus.LimitedAccess;
+                    return ConnectionStatus.LimitedAccess; 
                 }
                 using (StreamReader sr = new StreamReader(responce.GetResponseStream()))
                 {
                     if (sr.ReadToEnd().Equals("Microsoft NCSI"))
                     {
-                        return ConnectionStatus.Connected;
+                        return ConnectionStatus.Connected;    
                     }
                     else
                     {
@@ -127,9 +136,8 @@ namespace svtnk_exchangeRates
 
         }
 
-
-        const string pathToCurIDFile = @"D:\work\svitanak\svtnk_exchangeRates\docs\rates.list";
-
+        const string pathToCurIDFile = @"D:\work\svtnk_exchangeRates\docs\rates.list";
+     
         public static int GetCurIDCount(string path)
         {
             try
@@ -194,5 +202,11 @@ namespace svtnk_exchangeRates
                 ""Cur_Name"": ""Австралийский доллар"",
                 ""Cur_OfficialRate"": 1.5039}";
 
+        private void SettingsBtn_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsWindow SW= new SettingsWindow();
+            SW.Owner = this;
+            SW.Show();
+        }
     };
 }

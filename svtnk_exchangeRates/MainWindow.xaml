@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:svtnk_exchangeRates"
         mc:Ignorable="d"
-        Title="svtnk_exchangeRates" Height="450" Width="700" WindowStartupLocation="CenterScreen" FontFamily="Roboto" BorderThickness="1" MinHeight="225" MinWidth="400" Margin="0">
+        Title="svtnk_exchangeRates" Height="450" Width="700" WindowStartupLocation="CenterScreen" FontFamily="Roboto" BorderThickness="1" MinHeight="225" MinWidth="500" Margin="0">
     <Grid Margin="0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="73*"/>
@@ -14,9 +14,11 @@
         <ListBox x:Name="LB" Margin="3,5,5,0" Grid.Column="1" Height="174" VerticalAlignment="Top" IsEnabled="False" IsTextSearchEnabled="False"/>
         <DatePicker x:Name="DP" Margin="5,5,2,0" Height="25" VerticalAlignment="Top" Text="asd"/>
         <Button x:Name="PickDate" Content="Get rates from NBRB.BY" Margin="5,35,2,0" Height="25" VerticalAlignment="Top"/>
-        <ListBox x:Name="TempLB" Margin="5,65,2,30" IsEnabled="False" IsTextSearchEnabled="False"/>
-        <Button x:Name="WriteBtn" Content="Write in SPRVAL" Margin="5,0,2,5" Height="20" VerticalAlignment="Bottom"/>
-        <TextBlock x:Name="TB" Grid.Column="1" HorizontalAlignment="Left" Margin="3,184,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="228" Width="476"/>
+        <ListBox x:Name="TempLB" Margin="5,65,2,60" IsEnabled="False" IsTextSearchEnabled="False"/>
+        <Button x:Name="WriteBtn" Content="Write in SPRVAL" Margin="5,0,2,35" Height="20" VerticalAlignment="Bottom"/>
+        <TextBlock x:Name="TB" Grid.Column="1" Margin="3,184,5,6" TextWrapping="Wrap"/>
+        <StatusBar x:Name="StatusBar" Margin="5,0,2,6" Height="24" VerticalAlignment="Bottom" Background="White"/>
+        <Button x:Name="SettingsBtn" Content="Settings" Grid.Column="1" HorizontalAlignment="Right" Margin="0,5,5,0" VerticalAlignment="Top" Width="54" Click="SettingsBtn_Click"/>
 
     </Grid>
 </Window>
