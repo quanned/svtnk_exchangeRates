@@ -1,9 +1,10 @@
-1. При отсутствии файла J:\NSIG\rates\curSPRVAL.dbf и вызове программы вернуть FileNotFound
-2. При наличии файла J:\NSIG\rates\curSPRVAL.dbf:
+1. При отсутствии файла J:\NSIG\rates\curRates.dbf и вызове программы вернуть FileNotFound
+2. При наличии файла J:\NSIG\rates\curRates.dbf 
 	- файл пустой - вернуть FileIsEmpty
 	- файл содержит какую-либо информацию:
-		- проверить наличие строк из J:\NSIG\rates\curSPRVAL.dbf в J:\NSIG\SPRVAL.DBF:
+		- проверить наличие строк из J:\NSIG\rates\curRates.dbf в J:\NSIG\SPRVAL.DBF:
 			- при из отсутсвии - добавить, обновить индексы
 				- при возникновении ошибки - вернуть NotAdded
 				- при успешном слиянии файлов - вернуть Success
 			- при наличии - вернуть AlreadyAdded
+3. Статус возвращать строкой в файл J:\NSIG\rates\message.txt

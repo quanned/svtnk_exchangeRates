@@ -28,18 +28,29 @@ namespace svtnk_exchangeRates
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region constants
+        const string testUrl = @"https://www.nbrb.by/api/exrates/rates/USD?ondate=2020-03-13&parammode=2";
+        const string pathToCurIDFile = @"J:\NSIG\rates\rates.list";
+        //J:\NSIG\rates
+        //D:\work\svtnk_exchangeRates\docs
+        //https://www.nbrb.by/api/exrates/rates/840?parammode=1
+        //https://www.nbrb.by/api/exrates/rates/840?ondate=2020-03-13&parammode=1
+        //https://www.nbrb.by/api/exrates/rates/298?ondate=2016-7-5
+        //https://www.nbrb.by/api/exrates/rates/USD?ondate=2016-7-5         выгоднее юзать это, так получается быстрее
+        const string testJson = @"{
+                ""Cur_ID"": 170,
+                ""Date"": ""2016-07-06T00:00:00"",
+                ""Cur_Abbreviation"": ""AUD"",
+                ""Cur_Scale"": 1,
+                ""Cur_Name"": ""Австралийский доллар"",
+                ""Cur_OfficialRate"": 1.5039}";
+        #endregion
+
         public MainWindow()
         {
             InitializeComponent();
 
-
-            #region createConst
-            const string pathToCurIDFile = @"J:\NSIG\rates\rates.list";
-            //J:\NSIG\rates
-            //D:\work\svtnk_exchangeRates\docs
-            #endregion
-
-            #region checkInternetConnection
+#region checkInternetConnection
             if (CheckInterneConection() == ConnectionStatus.NotConnected)
             {
                 MessageBox.Show("Проверьте доступ к Интернету", "Внимание", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
@@ -51,25 +62,23 @@ namespace svtnk_exchangeRates
                 StatusBar.Items.Add("Connection status: " + ConnectionStatus.LimitedAccess.ToString());
             }
             else StatusBar.Items.Add("Connection status: " + ConnectionStatus.Connected.ToString());
-            #endregion
+ #endregion
 
             DateTime thisDay = DateTime.Today;
             //Console.WriteLine("date: {0:yyyy-MM-dd}", thisDay);
             DP.SelectedDate = thisDay;
             DP.SelectedDateFormat = DatePickerFormat.Short;
 
-            //DP.BlackoutDates.AddDatesInPast();
-            //DP.BlackoutDates.Add(new CalendarDateRange(DateTime.Now, DateTime.Now.AddDays(8)));
+            TempLB.SelectedIndex = 0;
 
-            Rate data = JsonConvert.DeserializeObject<Rate>(testJson);
-            LB.Items.Add(new ListBoxItem() { Content = data });
+            //string testLink = CreateRequestLink("USD");
+            //GetJSON(testLink);
+            //string testJSON = TB.Text.ToString();
 
+            //Rate data = JsonConvert.DeserializeObject<Rate>(testJSON); //testJson
+            //LB.Items.Add(new ListBoxItem() { Content = data });
 
-            string testUrl = @"https://www.nbrb.by/api/exrates/rates/USD?ondate=2020-03-13&parammode=2";
-            GetJSON(testUrl);
-            //MessageBox.Show(GetFormatDataPickerDate());
-            //MessageBox.Show(CreateRequestLink("USD"));
-
+           
             int curIDStrCount = GetCurIDCount(pathToCurIDFile);
             if (curIDStrCount == 0)
             {
@@ -83,8 +92,22 @@ namespace svtnk_exchangeRates
                 TempLB.Items.Add(curIDStrArray[i]);
             }
 
-            //TB.Text = GetJSON(testUrl);
+            string currentDate = GetFormatDataPickerDate();
+            string allJSONRequests, cycleLink, currentJSON;
+            allJSONRequests = "";
+            Rate tempData;
 
+            for (int i = 0; i < curIDStrCount; i++)
+            {
+                cycleLink = CreateRequestLink(GetOneCurID(i), currentDate);
+                GetJSON(cycleLink);
+                allJSONRequests += TB.Text;
+                currentJSON = TB.Text.ToString();
+                tempData = JsonConvert.DeserializeObject<Rate>(currentJSON);
+                LB.Items.Add(new ListBoxItem() { Content = tempData });
+            };
+
+            TB.Text = allJSONRequests;
         }
 
 
@@ -100,17 +123,18 @@ namespace svtnk_exchangeRates
 
             public override string ToString()
             {
-                return string.Format("{0} ({1}, {2}): {3}, Date: {4}", Cur_Name, Cur_Abbreviation, Cur_ID, Cur_OfficialRate, Date);
+                return string.Format("{0} ({1}, {2}), Курс: {3}, Дата: {4}", Cur_Name, Cur_Abbreviation, Cur_ID, Cur_OfficialRate, Date);
             }
         }
 
-        private void GetJSON(string url)
+
         //async void GetJSON(string uri)
+        private void GetJSON(string url)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             WebRequest httpWebRequest = WebRequest.Create(url);
             httpWebRequest.ContentType = "text/json";
-            httpWebRequest.Method = "GET"; //Можно GET
+            httpWebRequest.Method = "GET"; //Можно POST, но нужно ?????ограничивать длину запроса?????
 
             WebResponse httpResponse = httpWebRequest.GetResponse();
             using(Stream stream = httpResponse.GetResponseStream())
@@ -132,7 +156,7 @@ namespace svtnk_exchangeRates
             //{
             //    //ответ от сервера
             //    var result = streamReader.ReadToEnd();
-                
+
             //    //Сериализация
             //    Dictionary<string, List<Rate>> JsonObject = JsonConvert.DeserializeObject<Dictionary<string, List<Rate>>>(httpResponse.ToString());
             //    List<string> Json_Array = JsonConvert.DeserializeObject<List<string>>(httpResponse.ToString());
@@ -152,9 +176,12 @@ namespace svtnk_exchangeRates
 
         }
 
+        public string jsonResult { get; private set; }
+
+        //возвращает выбранную в ДатаПикере дату в виде, который необходим для создания запроса
         public string GetFormatDataPickerDate()
         {
-            DateTime datePickerSelectedDate = DP.DisplayDate;
+            DateTime datePickerSelectedDate = Convert.ToDateTime(DP.Text);
             //Console.WriteLine("Format date: {0:yyyy-MM-dd}", date);       
             int year = datePickerSelectedDate.Year;
             int month = datePickerSelectedDate.Month;
@@ -164,15 +191,18 @@ namespace svtnk_exchangeRates
             return formatdate;
         }
 
+        //вовзвращает тип параметра
         public int GetParammode()
         {
             return 2;
         }
 
-        public string CreateRequestLink(string curRateCode)
+        //возвращает ссылку, созданную на основе переданных функции параметров (название валюты и дата)
+        public string CreateRequestLink(string curRateCode, string curDate)
         {
             string ratesID = curRateCode.ToString();
-            string date = GetFormatDataPickerDate().ToString();
+            string date = curDate.ToString();
+            //MessageBox.Show(date);
             string parammode = GetParammode().ToString();
             string link;
 
@@ -220,7 +250,7 @@ namespace svtnk_exchangeRates
         }
         #endregion
 
-
+        //получает и возвращает количество указанных валют в файле для загрузки 
         public static int GetCurIDCount(string path)
         {
             try
@@ -245,6 +275,7 @@ namespace svtnk_exchangeRates
             }
         }
 
+        //получает и возвращает список указанных валют в файле
         public static string[] GetCurIDList(string path)
         {
             int arrayLength = GetCurIDCount(path);
@@ -254,28 +285,42 @@ namespace svtnk_exchangeRates
             return codeList;
         }
 
-        //https://www.nbrb.by/api/exrates/rates/840?parammode=1
-        //https://www.nbrb.by/api/exrates/rates/840?ondate=2020-03-13&parammode=1
-        //https://www.nbrb.by/api/exrates/rates/298?ondate=2016-7-5
-        //https://www.nbrb.by/api/exrates/rates/USD?ondate=2016-7-5         выгоднее юзать это, так получается быстрее
-
-
-
-
-        //string json = "https://www.nbrb.by/api/exrates/rates/USD?ondate=2020-06-26&parammode=2";
-        string testJson = @"{
-                ""Cur_ID"": 170,
-                ""Date"": ""2016-07-06T00:00:00"",
-                ""Cur_Abbreviation"": ""AUD"",
-                ""Cur_Scale"": 1,
-                ""Cur_Name"": ""Австралийский доллар"",
-                ""Cur_OfficialRate"": 1.5039}";
+        //возвращает значение списка на основании индекса
+        public string GetOneCurID(int id)
+        {
+            string curCode = (string)TempLB.Items[id];
+            return curCode;
+        }
 
         private void SettingsBtn_Click(object sender, RoutedEventArgs e)
         {
             SettingsWindow SW = new SettingsWindow();
             SW.Owner = this;
             SW.Show();
+        }
+
+
+        private void GetRatesBtn_Click(object sender, RoutedEventArgs e)
+        {
+            LB.Items.Clear();
+
+            int curIDStrCount = GetCurIDCount(pathToCurIDFile);
+            string currentDate = GetFormatDataPickerDate();
+            string allJSONRequests, cycleLink, currentJSON;
+            allJSONRequests = "";
+            Rate tempData;
+            
+            for (int i = 0; i < curIDStrCount; i++)
+            {
+                cycleLink = CreateRequestLink(GetOneCurID(i), currentDate);
+                GetJSON(cycleLink);
+                allJSONRequests += TB.Text;
+                currentJSON = TB.Text.ToString();
+                tempData = JsonConvert.DeserializeObject<Rate>(currentJSON);
+                LB.Items.Add(new ListBoxItem() { Content = tempData });
+            };
+
+            TB.Text = allJSONRequests;
         }
     };
 }
