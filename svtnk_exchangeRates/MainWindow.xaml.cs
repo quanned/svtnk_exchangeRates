@@ -50,25 +50,32 @@ namespace svtnk_exchangeRates
         {
             InitializeComponent();
 
-#region checkInternetConnection
+            #region checkInternetConnection
+            var brushConverter = new BrushConverter();
             if (CheckInterneConection() == ConnectionStatus.NotConnected)
             {
                 MessageBox.Show("Проверьте доступ к Интернету", "Внимание", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
                 StatusBar.Items.Add("Connection status: " + ConnectionStatus.NotConnected.ToString());
+                StatusBar.Background = (Brush)brushConverter.ConvertFrom("#FFFB9A9A");
             }
             else if (CheckInterneConection() == ConnectionStatus.LimitedAccess)
             {
                 MessageBox.Show("Проверьте доступ к Интернету", "Внимание", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
                 StatusBar.Items.Add("Connection status: " + ConnectionStatus.LimitedAccess.ToString());
+                StatusBar.Background = (Brush)brushConverter.ConvertFrom("#FFF2FFBA"); 
             }
-            else StatusBar.Items.Add("Connection status: " + ConnectionStatus.Connected.ToString());
- #endregion
+            else
+            {
+                StatusBar.Items.Add("Connection status: " + ConnectionStatus.Connected.ToString());
+                StatusBar.Background = (Brush)brushConverter.ConvertFrom("#FF9AFB9E");
+            }
+            #endregion
 
             DateTime thisDay = DateTime.Today;
             //Console.WriteLine("date: {0:yyyy-MM-dd}", thisDay);
             DP.SelectedDate = thisDay;
             DP.SelectedDateFormat = DatePickerFormat.Short;
-
+            
             TempLB.SelectedIndex = 0;
 
             //string testLink = CreateRequestLink("USD");
