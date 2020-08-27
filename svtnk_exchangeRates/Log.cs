@@ -13,7 +13,7 @@ namespace svtnk_exchangeRates
         //D:\work\svtnk_exchangeRates\docs
 
         public DateTime GetDateTimeNow()
-        { 
+        {
             return DateTime.Now;
         }
 
@@ -25,7 +25,7 @@ namespace svtnk_exchangeRates
         public enum OperationType
         {
             LogIn,
-            DatRaetrieval,
+            DataRaetrieval,
             DataRecording,
             LogOut,
             Error

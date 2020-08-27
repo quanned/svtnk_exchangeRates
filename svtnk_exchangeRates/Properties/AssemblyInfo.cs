@@ -7,10 +7,10 @@ using System.Windows;
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("svtnk_exchangeRates")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Загрузка курсов валют NBRB.API")]
+[assembly: AssemblyDescription("Загрузка курсов валют NBRB.API")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("avdey.dev")]
 [assembly: AssemblyProduct("svtnk_exchangeRates")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
@@ -19,7 +19,7 @@ using System.Windows;
 // Параметр ComVisible со значением FALSE делает типы в сборке невидимыми 
 // для COM-компонентов.  Если требуется обратиться к типу в этой сборке через 
 // COM, задайте атрибуту ComVisible значение TRUE для этого типа.
-[assembly: ComVisible(false)]
+[assembly: ComVisible(true)]
 
 //Чтобы начать сборку локализованных приложений, задайте 
 //<UICulture>CultureYouAreCodingWith</UICulture> в файле .csproj
@@ -53,3 +53,5 @@ using System.Windows;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: NeutralResourcesLanguage("ru")]
+

@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -44,6 +45,7 @@ namespace svtnk_exchangeRates
                 ""Cur_Scale"": 1,
                 ""Cur_Name"": ""Австралийский доллар"",
                 ""Cur_OfficialRate"": 1.5039}";
+        string checkInternetConectionResult;
         #endregion
 
         public MainWindow()
@@ -52,20 +54,23 @@ namespace svtnk_exchangeRates
 
             #region checkInternetConnection
             var brushConverter = new BrushConverter();
-            if (CheckInterneConection() == ConnectionStatus.NotConnected)
+            if (CheckInternetConnection() == ConnectionStatus.NotConnected)
             {
-                MessageBox.Show("Проверьте доступ к Интернету", "Внимание", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                checkInternetConectionResult = "NotConnected";
+                //MessageBox.Show("Проверьте доступ к Интернету", "Внимание", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
                 StatusBar.Items.Add("Connection status: " + ConnectionStatus.NotConnected.ToString());
                 StatusBar.Background = (Brush)brushConverter.ConvertFrom("#FFFB9A9A");
             }
-            else if (CheckInterneConection() == ConnectionStatus.LimitedAccess)
+            else if (CheckInternetConnection() == ConnectionStatus.LimitedAccess)
             {
-                MessageBox.Show("Проверьте доступ к Интернету", "Внимание", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                checkInternetConectionResult = "LimitedAccess";
+                //MessageBox.Show("Проверьте доступ к Интернету", "Внимание", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
                 StatusBar.Items.Add("Connection status: " + ConnectionStatus.LimitedAccess.ToString());
                 StatusBar.Background = (Brush)brushConverter.ConvertFrom("#FFF2FFBA"); 
             }
             else
             {
+                checkInternetConectionResult = "Connected";
                 StatusBar.Items.Add("Connection status: " + ConnectionStatus.Connected.ToString());
                 StatusBar.Background = (Brush)brushConverter.ConvertFrom("#FF9AFB9E");
             }
@@ -89,8 +94,21 @@ namespace svtnk_exchangeRates
             int curIDStrCount = GetCurIDCount(pathToCurIDFile);
             if (curIDStrCount == 0)
             {
-                MessageBox.Show("Файл, содержащий список валют, востребованных для загрузки пуст/не существует/поврежден. \rPath: " + pathToCurIDFile, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Environment.Exit(0);
+                MessageBox.Show("Файл, содержащий список валют, востребованных для загрузки пуст/не существует/поврежден. \rPath: " + pathToCurIDFile + "\rПроверьте наличие файла, а также данных в нем и перезапустите программу. \rПерезагрузить сейчас?", "Error", MessageBoxButton.YesNo, MessageBoxImage.Error);
+                if (DialogResult.Equals("Yes"))
+                {
+                    //Application.Restart();
+                    //System.Diagnostics.Process.Start(Application.)
+                    ////Process.Start(Application.Sta)
+                    string path = System.Reflection.Assembly.GetEntryAssembly().Location;
+                    Process.Start(path);
+                    Process.GetCurrentProcess().Kill();
+                    
+                }
+                else
+                {
+                    Environment.Exit(0);
+                }
             }
             string[] curIDStrArray = new string[curIDStrCount];
             for (int i = 0; i < curIDStrCount; i++)
@@ -99,22 +117,24 @@ namespace svtnk_exchangeRates
                 TempLB.Items.Add(curIDStrArray[i]);
             }
 
-            string currentDate = GetFormatDataPickerDate();
-            string allJSONRequests, cycleLink, currentJSON;
-            allJSONRequests = "";
-            Rate tempData;
+            //
+            //string currentDate = GetFormatDataPickerDate();
+            //string allJSONRequests, cycleLink, currentJSON;
+            //allJSONRequests = "";
+            //Rate tempData;
 
-            for (int i = 0; i < curIDStrCount; i++)
-            {
-                cycleLink = CreateRequestLink(GetOneCurID(i), currentDate);
-                GetJSON(cycleLink);
-                allJSONRequests += TB.Text;
-                currentJSON = TB.Text.ToString();
-                tempData = JsonConvert.DeserializeObject<Rate>(currentJSON);
-                LB.Items.Add(new ListBoxItem() { Content = tempData });
-            };
+            //for (int i = 0; i < curIDStrCount; i++)
+            //{
+            //    cycleLink = CreateRequestLink(GetOneCurID(i), currentDate);
+            //    GetJSON(cycleLink);
+            //    allJSONRequests += TB.Text;
+            //    currentJSON = TB.Text.ToString();
+            //    tempData = JsonConvert.DeserializeObject<Rate>(currentJSON);
+            //    LB.Items.Add(new ListBoxItem() { Content = tempData });
+            //};
 
-            TB.Text = allJSONRequests;
+            //TB.Text = allJSONRequests;
+            //
         }
 
 
@@ -130,27 +150,28 @@ namespace svtnk_exchangeRates
 
             public override string ToString()
             {
-                return string.Format("{0} ({1}, {2}), Курс: {3}, Дата: {4}", Cur_Name, Cur_Abbreviation, Cur_ID, Cur_OfficialRate, Date);
+                return string.Format("{0} {1} ({2}, {3}), Курс: {4}, Дата: {5}", Cur_Scale, Cur_Name, Cur_Abbreviation, Cur_ID, Cur_OfficialRate, Date);
             }
         }
 
-
+    
         //async void GetJSON(string uri)
-        private void GetJSON(string url)
+        public void GetJSON(string url)
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            WebRequest httpWebRequest = WebRequest.Create(url);
-            httpWebRequest.ContentType = "text/json";
-            httpWebRequest.Method = "GET"; //Можно POST, но нужно ?????ограничивать длину запроса?????
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12; //без этого протокола не работает, на версии 1.1 тоже не заводится
+                WebRequest httpWebRequest = WebRequest.Create(url);
+                httpWebRequest.ContentType = "text/json";
+                httpWebRequest.Method = "GET"; //Можно POST, но нужно ?????ограничивать длину запроса?????
 
-            WebResponse httpResponse = httpWebRequest.GetResponse();
-            using(Stream stream = httpResponse.GetResponseStream())
-            {
-                using(StreamReader streamReader = new StreamReader(stream))
+                WebResponse httpResponse = httpWebRequest.GetResponse();
+                using (Stream stream = httpResponse.GetResponseStream())
                 {
-                    TB.Text = streamReader.ReadToEnd();
-                }
-            }
+                    using (StreamReader streamReader = new StreamReader(stream))
+                    {
+                        TB.Text = streamReader.ReadToEnd();
+                    }
+                }      
+        
             //HttpClient httpClient = new HttpClient();
             //HttpResponseMessage response = new HttpRequestMessage(HttpMethod.Get, request);
             // or = new HttpRequestMessage(HttpMethod.Get, request);
@@ -225,7 +246,7 @@ namespace svtnk_exchangeRates
         }
 
         //public static string CheckInterneConection()
-        public static ConnectionStatus CheckInterneConection()
+        public static ConnectionStatus CheckInternetConnection()
         {
             // Проверить загрузку документа ncsi.txt
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("http://www.msftncsi.com/ncsi.txt");
@@ -256,6 +277,7 @@ namespace svtnk_exchangeRates
 
         }
         #endregion
+
 
         //получает и возвращает количество указанных валют в файле для загрузки 
         public static int GetCurIDCount(string path)
@@ -309,25 +331,32 @@ namespace svtnk_exchangeRates
 
         private void GetRatesBtn_Click(object sender, RoutedEventArgs e)
         {
-            LB.Items.Clear();
-
-            int curIDStrCount = GetCurIDCount(pathToCurIDFile);
-            string currentDate = GetFormatDataPickerDate();
-            string allJSONRequests, cycleLink, currentJSON;
-            allJSONRequests = "";
-            Rate tempData;
-            
-            for (int i = 0; i < curIDStrCount; i++)
+            if (checkInternetConectionResult == "NotConnected" || checkInternetConectionResult == "LimitedAccess")
             {
-                cycleLink = CreateRequestLink(GetOneCurID(i), currentDate);
-                GetJSON(cycleLink);
-                allJSONRequests += TB.Text;
-                currentJSON = TB.Text.ToString();
-                tempData = JsonConvert.DeserializeObject<Rate>(currentJSON);
-                LB.Items.Add(new ListBoxItem() { Content = tempData });
-            };
+                MessageBox.Show("Без тырнета никуда, увы");
+            }
+            else
+            {
+                LB.Items.Clear();
 
-            TB.Text = allJSONRequests;
+                int curIDStrCount = GetCurIDCount(pathToCurIDFile);
+                string currentDate = GetFormatDataPickerDate();
+                string allJSONRequests, cycleLink, currentJSON;
+                allJSONRequests = "";
+                Rate tempData;
+
+                for (int i = 0; i < curIDStrCount; i++)
+                {
+                    cycleLink = CreateRequestLink(GetOneCurID(i), currentDate);
+                    GetJSON(cycleLink);
+                    allJSONRequests += TB.Text;
+                    currentJSON = TB.Text.ToString();
+                    tempData = JsonConvert.DeserializeObject<Rate>(currentJSON);
+                    LB.Items.Add(new ListBoxItem() { Content = tempData });
+                };
+
+                TB.Text = allJSONRequests;
+            }
         }
     };
 }
