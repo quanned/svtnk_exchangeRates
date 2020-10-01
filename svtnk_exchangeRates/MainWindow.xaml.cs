@@ -57,14 +57,14 @@ namespace svtnk_exchangeRates
             if (CheckInternetConnection() == ConnectionStatus.NotConnected)
             {
                 checkInternetConectionResult = "NotConnected";
-                //MessageBox.Show("Проверьте доступ к Интернету", "Внимание", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                MessageBox.Show("Проверьте доступ к Интернету", "Внимание", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
                 StatusBar.Items.Add("Connection status: " + ConnectionStatus.NotConnected.ToString());
                 StatusBar.Background = (Brush)brushConverter.ConvertFrom("#FFFB9A9A");
             }
             else if (CheckInternetConnection() == ConnectionStatus.LimitedAccess)
             {
                 checkInternetConectionResult = "LimitedAccess";
-                //MessageBox.Show("Проверьте доступ к Интернету", "Внимание", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                MessageBox.Show("Проверьте доступ к Интернету", "Внимание", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
                 StatusBar.Items.Add("Connection status: " + ConnectionStatus.LimitedAccess.ToString());
                 StatusBar.Background = (Brush)brushConverter.ConvertFrom("#FFF2FFBA"); 
             }
