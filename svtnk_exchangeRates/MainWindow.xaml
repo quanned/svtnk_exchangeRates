@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:svtnk_exchangeRates"
         mc:Ignorable="d"
-        Title="NBRB.API for Svitanak JSC" Height="450" Width="700" WindowStartupLocation="CenterScreen" FontFamily="Roboto" BorderThickness="1" MinHeight="225" MinWidth="500" Margin="0" Icon="Resources/logo-png-400.ico" Background="White">
+        Title="NBRB.API for Svitanak JSC" Height="450" Width="700" WindowStartupLocation="CenterScreen" FontFamily="Open Sans" BorderThickness="1" MinHeight="225" MinWidth="500" Margin="0" Icon="Resources/logo-png-400.ico" Background="White">
     <Grid Margin="0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="73*"/>
@@ -40,14 +40,9 @@
             </Button.Background>
         </Button>
         <StatusBar x:Name="StatusBar" Margin="5,0,2,6" Height="24" VerticalAlignment="Bottom" Background="White" BorderBrush="#FF8B8B8B"/>
-        <Button x:Name="SettingsBtn" Content="Settings" Grid.Column="1" HorizontalAlignment="Right" Margin="0,5,5,0" VerticalAlignment="Top" Width="54" Click="SettingsBtn_Click" BorderThickness="0" BorderBrush="Black" Foreground="Black" OpacityMask="#FFECA045">
+        <Button x:Name="SettingsBtn" Content="" Grid.Column="1" HorizontalAlignment="Right" Margin="0,5,5,0" VerticalAlignment="Top" Width="31" Click="SettingsBtn_Click" BorderThickness="3,3,3,1" BorderBrush="{x:Null}" Foreground="{x:Null}" Height="31" MinWidth="30" MinHeight="30" MaxWidth="40" MaxHeight="40">
             <Button.Background>
-                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                    <GradientStop Color="#FFF3F3F3" Offset="0"/>
-                    <GradientStop Color="#FFEBEBEB" Offset="0.5"/>
-                    <GradientStop Color="#FFDDDDDD" Offset="0.5"/>
-                    <GradientStop Color="White" Offset="1"/>
-                </LinearGradientBrush>
+                <ImageBrush ImageSource="Resources/settings.png"/>
             </Button.Background>
         </Button>
         <Label Content="json" Grid.Column="1" HorizontalAlignment="Left" Margin="3,184,0,0" VerticalAlignment="Top" Padding="0"/>

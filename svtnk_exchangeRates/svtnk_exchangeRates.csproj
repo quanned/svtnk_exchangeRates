@@ -161,6 +161,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\receive.png" />
+    <Resource Include="Resources\settings.png" />
     <Resource Include="Resources\logo-png-400.ico" />
     <Resource Include="logo-png-400.ico" />
     <Content Include="Resources\exchange-rates-svg.svg" />
