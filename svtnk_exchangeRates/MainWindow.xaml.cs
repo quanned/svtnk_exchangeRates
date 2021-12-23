@@ -46,6 +46,7 @@ namespace svtnk_exchangeRates
                 ""Cur_Name"": ""Австралийский доллар"",
                 ""Cur_OfficialRate"": 1.5039}";
         string checkInternetConectionResult;
+        int errorFlag = 0;
         #endregion
 
         public MainWindow()
@@ -66,7 +67,7 @@ namespace svtnk_exchangeRates
                 checkInternetConectionResult = "LimitedAccess";
                 MessageBox.Show("Проверьте доступ к Интернету", "Внимание", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
                 StatusBar.Items.Add("Connection status: " + ConnectionStatus.LimitedAccess.ToString());
-                StatusBar.Background = (Brush)brushConverter.ConvertFrom("#FFF2FFBA"); 
+                StatusBar.Background = (Brush)brushConverter.ConvertFrom("#FFF2FFBA");
             }
             else
             {
@@ -80,7 +81,7 @@ namespace svtnk_exchangeRates
             //Console.WriteLine("date: {0:yyyy-MM-dd}", thisDay);
             DP.SelectedDate = thisDay;
             DP.SelectedDateFormat = DatePickerFormat.Short;
-            
+
             TempLB.SelectedIndex = 0;
 
             //string testLink = CreateRequestLink("USD");
@@ -90,7 +91,7 @@ namespace svtnk_exchangeRates
             //Rate data = JsonConvert.DeserializeObject<Rate>(testJSON); //testJson
             //LB.Items.Add(new ListBoxItem() { Content = data });
 
-           
+
             int curIDStrCount = GetCurIDCount(pathToCurIDFile);
             if (curIDStrCount == 0)
             {
@@ -103,7 +104,7 @@ namespace svtnk_exchangeRates
                     string path = System.Reflection.Assembly.GetEntryAssembly().Location;
                     Process.Start(path);
                     Process.GetCurrentProcess().Kill();
-                    
+
                 }
                 else
                 {
@@ -154,24 +155,44 @@ namespace svtnk_exchangeRates
             }
         }
 
-    
+
         //async void GetJSON(string uri)
         public void GetJSON(string url)
         {
+            try
+            {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12; //без этого протокола не работает, на версии 1.1 тоже не заводится
-                WebRequest httpWebRequest = WebRequest.Create(url);
-                httpWebRequest.ContentType = "text/json";
-                httpWebRequest.Method = "GET"; //Можно POST, но нужно ?????ограничивать длину запроса?????
+                HttpWebRequest myHttpWebRequest = (HttpWebRequest)WebRequest.Create(url);
+                myHttpWebRequest.ContentType = "text/json";
+                myHttpWebRequest.Method = "GET"; //Можно POST, но нужно ?????ограничивать длину запроса?????
 
-                WebResponse httpResponse = httpWebRequest.GetResponse();
-                using (Stream stream = httpResponse.GetResponseStream())
+                HttpWebResponse myHttpWebResponse = (HttpWebResponse)myHttpWebRequest.GetResponse();
+                if (myHttpWebResponse.StatusCode == HttpStatusCode.OK)
                 {
-                    using (StreamReader streamReader = new StreamReader(stream))
+                    using (Stream stream = myHttpWebResponse.GetResponseStream())
                     {
-                        TB.Text = streamReader.ReadToEnd();
+                        using (StreamReader streamReader = new StreamReader(stream))
+                        {
+                            TB.Text = streamReader.ReadToEnd();
+                        }
                     }
-                }      
-        
+                }
+                else MessageBox.Show("Ошибка при получении ответа от сервера", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (WebException e)
+            {
+                Console.WriteLine("\r\nWebException Raised. The following error occured : {0}", e.Status);
+                MessageBox.Show("Ошибка при получении ответа от NBRB", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                errorFlag = 1;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("\nThe following Exception was raised : {0}", e.Message);
+                MessageBox.Show("Ошибка при попытке обращения к NBRB", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+
+
             //HttpClient httpClient = new HttpClient();
             //HttpResponseMessage response = new HttpRequestMessage(HttpMethod.Get, request);
             // or = new HttpRequestMessage(HttpMethod.Get, request);
@@ -234,7 +255,7 @@ namespace svtnk_exchangeRates
             string parammode = GetParammode().ToString();
             string link;
 
-            return link = string.Format("https://www.nbrb.by/api/exrates/rates/{0}?ondate={1}&parammode={2}", ratesID, date, parammode);          
+            return link = string.Format("https://www.nbrb.by/api/exrates/rates/{0}?ondate={1}&parammode={2}", ratesID, date, parammode);
         }
 
         #region ckeckInternetConnectionStatus
@@ -351,8 +372,20 @@ namespace svtnk_exchangeRates
                     GetJSON(cycleLink);
                     allJSONRequests += TB.Text;
                     currentJSON = TB.Text.ToString();
-                    tempData = JsonConvert.DeserializeObject<Rate>(currentJSON);
-                    LB.Items.Add(new ListBoxItem() { Content = tempData });
+                    if (errorFlag == 1)
+                    {
+                        MessageBox.Show("Курс валют на заданную дату не существует. Повторите попытку позже", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        errorFlag = 0;
+                        TB.Text = "";
+                        return;
+                    }
+                    else
+                    {
+                        //MessageBox.Show(currentJSON.ToString());
+                        tempData = JsonConvert.DeserializeObject<Rate>(currentJSON);
+                        LB.Items.Add(new ListBoxItem() { Content = tempData });
+                    }
+
                 };
 
                 TB.Text = allJSONRequests;
