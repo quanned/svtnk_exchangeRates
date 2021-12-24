@@ -31,8 +31,10 @@ namespace svtnk_exchangeRates
         public SettingsWindow()
         {
             InitializeComponent();
-
+            string pathToRatesListFile = GetPathToRatesList();
             int strRatesFileCount = GetRatesCount(pathToRatesListFile);
+            Console.WriteLine("strRatesFileCount" + strRatesFileCount);
+
             string[] curIDStrArray = new string[strRatesFileCount];
             for (int i = 0; i < strRatesFileCount; i++)
             {
@@ -41,7 +43,10 @@ namespace svtnk_exchangeRates
             }
         }
 
-        const string pathToRatesListFile = @"D:\work\svtnk_exchangeRates\docs\rates.list";
+        public string GetPathToRatesList()
+        {
+            return @PathToRatesListTB.Text.ToString();
+        }
 
         private static int GetRatesCount(string path)
         {
@@ -54,7 +59,9 @@ namespace svtnk_exchangeRates
                     while ((line = sr.ReadLine()) != null) //читаем по одной строке пока не вычитаем все из потока
                     {
                         i++;
+                        Console.WriteLine(line);
                     }
+                    Console.WriteLine("Line counts: " + i.ToString());
                     return i;
                 }
             }
@@ -67,7 +74,8 @@ namespace svtnk_exchangeRates
 
         public static string[] GetRatesList(string path)
         {
-            int arrayLength = GetRatesCount(pathToRatesListFile);
+            //string pathToRatesListFile = PathToRatesListTB.Text.ToString();
+            int arrayLength = GetRatesCount(path);
             string[] codeList = new string[arrayLength];
 
             codeList = File.ReadAllLines(path);
@@ -76,7 +84,12 @@ namespace svtnk_exchangeRates
 
         private void SaveCurListBtn_Click(object sender, RoutedEventArgs e)
         {
-            
+            string[] newRatesArray = new string[SetRatesLB.Items.Count-1];
+            for (int i = 0; i<= SetRatesLB.Items.Count-1; i++)
+            {
+                newRatesArray[i] = SetRatesLB.Items[i].ToString();
+            }
+            System.IO.File.WriteAllLines(GetPathToRatesList(), newRatesArray.Select(i => i.ToString()).ToArray());
         }
 
         private void AddLineBtn_Click(object sender, RoutedEventArgs e)
@@ -87,6 +100,11 @@ namespace svtnk_exchangeRates
         private void DeleteLineBtn_Click(object sender, RoutedEventArgs e)
         {
             SetRatesLB.Items.RemoveAt(SetRatesLB.SelectedIndex);
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            SecondCHB.IsEnabled = false;
         }
     }
 }

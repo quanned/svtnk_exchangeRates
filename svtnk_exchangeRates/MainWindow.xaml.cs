@@ -96,6 +96,7 @@ namespace svtnk_exchangeRates
             if (curIDStrCount == 0)
             {
                 MessageBox.Show("Файл, содержащий список валют, востребованных для загрузки пуст/не существует/поврежден. \rPath: " + pathToCurIDFile + "\rПроверьте наличие файла, а также данных в нем и перезапустите программу. \rПерезагрузить сейчас?", "Error", MessageBoxButton.YesNo, MessageBoxImage.Error);
+                Log log = new Log(false, "Считан файл с перечнем валют. Количество строк в файле: " + curIDStrCount.ToString(), false);
                 if (DialogResult.Equals("Yes"))
                 {
                     //Application.Restart();
@@ -108,9 +109,11 @@ namespace svtnk_exchangeRates
                 }
                 else
                 {
+                    //Process.Start()
                     Environment.Exit(0);
                 }
             }
+            Log elseLog = new Log(false, "Считан файл с перечнем валют. Количество строк в файле: " + curIDStrCount.ToString(), false);
             string[] curIDStrArray = new string[curIDStrCount];
             for (int i = 0; i < curIDStrCount; i++)
             {
@@ -177,18 +180,24 @@ namespace svtnk_exchangeRates
                         }
                     }
                 }
-                else MessageBox.Show("Ошибка при получении ответа от сервера", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                else
+                {
+                    MessageBox.Show("Ошибка при получении ответа от сервера", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Log _log = new Log(true, "Ошибка при получении ответа от сервера", false);
+                }
             }
             catch (WebException e)
             {
                 Console.WriteLine("\r\nWebException Raised. The following error occured : {0}", e.Status);
                 MessageBox.Show("Ошибка при получении ответа от NBRB", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                Log _log = new Log(true, "Ошибка при получении ответа от NBRB", false);
                 errorFlag = 1;
             }
             catch (Exception e)
             {
                 Console.WriteLine("\nThe following Exception was raised : {0}", e.Message);
                 MessageBox.Show("Ошибка при попытке обращения к NBRB", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                Log _log = new Log(true, "Ошибка при попытке обращения к NBRB", false);
             }
 
 
@@ -253,9 +262,9 @@ namespace svtnk_exchangeRates
             string date = curDate.ToString();
             //MessageBox.Show(date);
             string parammode = GetParammode().ToString();
-            string link;
-
-            return link = string.Format("https://www.nbrb.by/api/exrates/rates/{0}?ondate={1}&parammode={2}", ratesID, date, parammode);
+            string link = string.Format("https://www.nbrb.by/api/exrates/rates/{0}?ondate={1}&parammode={2}", ratesID, date, parammode);
+            Log log = new Log(false, "Создана ссылка для валюты: " + ratesID.ToString()+ " на дату " + date.ToString(), false);
+            return link;
         }
 
         #region ckeckInternetConnectionStatus
@@ -283,6 +292,7 @@ namespace svtnk_exchangeRates
                 {
                     if (sr.ReadToEnd().Equals("Microsoft NCSI"))
                     {
+                        Log log = new Log(false, "Подключение к сети Интернет присутствует.", false);
                         return ConnectionStatus.Connected;
                     }
                     else
@@ -293,6 +303,7 @@ namespace svtnk_exchangeRates
             }
             catch
             {
+                Log log = new Log(true, "Подключение к сети Интернет отсутствует.", false);
                 return ConnectionStatus.NotConnected;
             }
 
@@ -314,9 +325,11 @@ namespace svtnk_exchangeRates
                         i++;
                         Console.WriteLine(line);
                     }
+                    
                     Console.WriteLine("Line counts: " + i.ToString());
                     return i;
                 }
+                
             }
             catch (Exception e)
             {
@@ -374,7 +387,8 @@ namespace svtnk_exchangeRates
                     currentJSON = TB.Text.ToString();
                     if (errorFlag == 1)
                     {
-                        MessageBox.Show("Курс валют на заданную дату не существует. Повторите попытку позже", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        //MessageBox.Show("Курс валют на заданную дату не существует. Повторите попытку позже", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Log ratesNotExist = new Log(true, "Курс валют на заданную дату не существует. " + currentDate.ToString(), false);
                         errorFlag = 0;
                         TB.Text = "";
                         return;
@@ -383,12 +397,18 @@ namespace svtnk_exchangeRates
                     {
                         //MessageBox.Show(currentJSON.ToString());
                         tempData = JsonConvert.DeserializeObject<Rate>(currentJSON);
-                        LB.Items.Add(new ListBoxItem() { Content = tempData });
+                        LB.Items.Add(new ListBoxItem() { Content = tempData }); 
                     }
 
                 };
 
                 TB.Text = allJSONRequests;
+                if (TB.Text != "")
+                {
+                    Log allOK = new Log(false, "Курсы валют успешно загружены.", false);
+                    Log emptyString = new Log(false, "\n", true);
+                }
+
             }
         }
     };

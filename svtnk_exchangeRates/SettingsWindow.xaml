@@ -5,17 +5,37 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:svtnk_exchangeRates"
         mc:Ignorable="d"
-        Title="SettingsWindow" Height="250" Width="266.5">
-    <Grid>
+        Title="SettingsWindow" Height="331" Width="473.5">
+    <Grid Margin="0,0,0,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Label Content="Input rates list" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="125" Grid.ColumnSpan="2"/>
-        <ListBox x:Name="SetRatesLB" Margin="10,41,10,66" Grid.ColumnSpan="2"/>
-        <Button x:Name="SaveCurListBtn" Content="Save" Margin="10,0,10,10" Height="22" VerticalAlignment="Bottom" Click="SaveCurListBtn_Click" Grid.ColumnSpan="2"/>
-        <Button x:Name="AddLineBtn" Content="+" Margin="10,0,4,39" Height="22" VerticalAlignment="Bottom" Click="AddLineBtn_Click"/>
-        <Button x:Name="DeleteLineBtn" Content="-" Margin="4,0,10,39" Height="22" VerticalAlignment="Bottom" Grid.Column="1" Click="DeleteLineBtn_Click"/>
+
+        <TabControl>
+            <TabItem Header="Rates list">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Input rates list:" HorizontalAlignment="Left" VerticalAlignment="Top" Width="125" Margin="10,41,0,0"/>
+                    <ListBox x:Name="SetRatesLB" Margin="10,72,10,67" Grid.ColumnSpan="2"/>
+                    <Button x:Name="SaveCurListBtn" Content="Save" Margin="0,0,10,10" Height="22" VerticalAlignment="Bottom" Click="SaveCurListBtn_Click" Grid.Column="1" HorizontalAlignment="Right" Width="80"/>
+                    <Button x:Name="AddLineBtn" Content="Add" Margin="10,0,10,40" Height="22" VerticalAlignment="Bottom" Click="AddLineBtn_Click"/>
+                    <Button x:Name="DeleteLineBtn" Content="Delete" Margin="10,0,10,40" Height="22" VerticalAlignment="Bottom" Click="DeleteLineBtn_Click" Grid.Column="1"/>
+                    <Label Content="Path to rates list" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="97"/>
+                    <TextBox x:Name="PathToRatesListTB" Grid.ColumnSpan="2" Height="23" Margin="112,13,10,0" TextWrapping="Wrap" Text="D:\work\svtnk_exchangeRates\docs\rates.list" VerticalAlignment="Top"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Log">
+                <Grid Background="#FFE5E5E5">
+                    <CheckBox x:Name="CHBLogWork" Content="Логировать действия пользователей" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="CheckBox_Checked"/>
+                    <CheckBox x:Name="SecondCHB" Content="Второй чек" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top"/>
+                    <TextBox x:Name="PathToLogFileTB" Height="23" Margin="102,53,10,0" TextWrapping="Wrap" Text="J:\NSIG\rates\log.txt" VerticalAlignment="Top"/>
+                    <Label Content="Path to log file" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
 
     </Grid>
 </Window>
