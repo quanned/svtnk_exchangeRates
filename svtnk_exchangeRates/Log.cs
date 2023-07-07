@@ -45,10 +45,10 @@ namespace svtnk_exchangeRates
             return Environment.MachineName;
         }
 
-        public string CreateLogBlock(bool error, string operationText, bool notEmptyString)
+        public string CreateLogBlock(bool error, string operationText, bool emptyString)
         {
             //block;
-            if (notEmptyString)
+            if (emptyString)
             {
                 return string.Format(operationText);
             }

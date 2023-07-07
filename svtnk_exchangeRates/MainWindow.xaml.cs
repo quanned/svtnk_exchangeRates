@@ -86,17 +86,15 @@ namespace svtnk_exchangeRates
 
             //string testLink = CreateRequestLink("USD");
             //GetJSON(testLink);
-            //string testJSON = TB.Text.ToString();
-
+            //string testJSON = TB.Text.ToString
             //Rate data = JsonConvert.DeserializeObject<Rate>(testJSON); //testJson
             //LB.Items.Add(new ListBoxItem() { Content = data });
-
 
             int curIDStrCount = GetCurIDCount(pathToCurIDFile);
             if (curIDStrCount == 0)
             {
                 MessageBox.Show("Файл, содержащий список валют, востребованных для загрузки пуст/не существует/поврежден. \rPath: " + pathToCurIDFile + "\rПроверьте наличие файла, а также данных в нем и перезапустите программу. \rПерезагрузить сейчас?", "Error", MessageBoxButton.YesNo, MessageBoxImage.Error);
-                Log log = new Log(false, "Считан файл с перечнем валют. Количество строк в файле: " + curIDStrCount.ToString(), false);
+                _ = new Log(false, "Считан файл с перечнем валют. Количество строк в файле: " + curIDStrCount.ToString(), false);
                 if (DialogResult.Equals("Yes"))
                 {
                     //Application.Restart();
@@ -105,7 +103,6 @@ namespace svtnk_exchangeRates
                     string path = System.Reflection.Assembly.GetEntryAssembly().Location;
                     Process.Start(path);
                     Process.GetCurrentProcess().Kill();
-
                 }
                 else
                 {
@@ -113,15 +110,14 @@ namespace svtnk_exchangeRates
                     Environment.Exit(0);
                 }
             }
-            Log elseLog = new Log(false, "Считан файл с перечнем валют. Количество строк в файле: " + curIDStrCount.ToString(), false);
+
+            _ = new Log(false, "Считан файл с перечнем валют. Количество строк в файле: " + curIDStrCount.ToString(), false);
             string[] curIDStrArray = new string[curIDStrCount];
             for (int i = 0; i < curIDStrCount; i++)
             {
                 curIDStrArray[i] = GetCurIDList(pathToCurIDFile)[i];
                 TempLB.Items.Add(curIDStrArray[i]);
             }
-
-            //
             //string currentDate = GetFormatDataPickerDate();
             //string allJSONRequests, cycleLink, currentJSON;
             //allJSONRequests = "";
@@ -207,9 +203,6 @@ namespace svtnk_exchangeRates
             // or = new HttpRequestMessage(HttpMethod.Get, request);
             // (await httpClient.GetAsync(request)).EnsureSuccessStatusCode();
 
-
-
-
             //using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
             //{
             //    //ответ от сервера
@@ -244,7 +237,6 @@ namespace svtnk_exchangeRates
             int year = datePickerSelectedDate.Year;
             int month = datePickerSelectedDate.Month;
             int day = datePickerSelectedDate.Day;
-
             string formatdate = string.Format("{0}-{1}-{2}", year, month, day);
             return formatdate;
         }
@@ -262,8 +254,8 @@ namespace svtnk_exchangeRates
             string date = curDate.ToString();
             //MessageBox.Show(date);
             string parammode = GetParammode().ToString();
-            string link = string.Format("https://www.nbrb.by/api/exrates/rates/{0}?ondate={1}&parammode={2}", ratesID, date, parammode);
-            Log log = new Log(false, "Создана ссылка для валюты: " + ratesID.ToString()+ " на дату " + date.ToString(), false);
+            string link = string.Format("https://api.nbrb.by/exrates/rates/{0}?ondate={1}&parammode={2}", ratesID, date, parammode);
+            _ = new Log(false, "Создана ссылка для валюты: " + ratesID.ToString() + " на дату " + date.ToString(), false);
             return link;
         }
 
@@ -303,13 +295,12 @@ namespace svtnk_exchangeRates
             }
             catch
             {
-                Log log = new Log(true, "Подключение к сети Интернет отсутствует.", false);
+                _ = new Log(true, "Подключение к сети Интернет отсутствует.", false);
                 return ConnectionStatus.NotConnected;
             }
 
         }
         #endregion
-
 
         //получает и возвращает количество указанных валют в файле для загрузки 
         public static int GetCurIDCount(string path)
@@ -325,11 +316,9 @@ namespace svtnk_exchangeRates
                         i++;
                         Console.WriteLine(line);
                     }
-                    
                     Console.WriteLine("Line counts: " + i.ToString());
                     return i;
                 }
-                
             }
             catch (Exception e)
             {
@@ -343,7 +332,6 @@ namespace svtnk_exchangeRates
         {
             int arrayLength = GetCurIDCount(path);
             string[] codeList = new string[arrayLength];
-
             codeList = File.ReadAllLines(path);
             return codeList;
         }
@@ -388,7 +376,7 @@ namespace svtnk_exchangeRates
                     if (errorFlag == 1)
                     {
                         //MessageBox.Show("Курс валют на заданную дату не существует. Повторите попытку позже", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                        Log ratesNotExist = new Log(true, "Курс валют на заданную дату не существует. " + currentDate.ToString(), false);
+                        _ = new Log(true, "Курс валют на заданную дату не существует. " + currentDate.ToString(), false);
                         errorFlag = 0;
                         TB.Text = "";
                         return;
@@ -399,14 +387,13 @@ namespace svtnk_exchangeRates
                         tempData = JsonConvert.DeserializeObject<Rate>(currentJSON);
                         LB.Items.Add(new ListBoxItem() { Content = tempData }); 
                     }
-
                 };
 
                 TB.Text = allJSONRequests;
                 if (TB.Text != "")
                 {
-                    Log allOK = new Log(false, "Курсы валют успешно загружены.", false);
-                    Log emptyString = new Log(false, "\n", true);
+                    _ = new Log(false, "Курсы валют успешно загружены.", false);
+                    _ = new Log(false, "\n", true);
                 }
 
             }

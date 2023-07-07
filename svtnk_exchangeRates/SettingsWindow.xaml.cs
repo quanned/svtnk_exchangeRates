@@ -89,16 +89,18 @@ namespace svtnk_exchangeRates
             {
                 newRatesArray[i] = SetRatesLB.Items[i].ToString();
             }
-            System.IO.File.WriteAllLines(GetPathToRatesList(), newRatesArray.Select(i => i.ToString()).ToArray());
+            System.IO.File.WriteAllLines(GetPathToRatesList(), newRatesArray.Select(i => i.ToString()).ToArray());  
         }
 
         private void AddLineBtn_Click(object sender, RoutedEventArgs e)
         {
             SetRatesLB.Items.Insert(1, "Введите код валюты");
+            _ = new Log(false, "В перечень загружаемых курсов добавлен следующий элемент: " + SetRatesLB.SelectedItem.ToString(), true);
         }
 
         private void DeleteLineBtn_Click(object sender, RoutedEventArgs e)
         {
+            _ = new Log(false, "Из перечня загружаемых курсов удален следующий элемент: " + SetRatesLB.SelectedItem.ToString(), true);
             SetRatesLB.Items.RemoveAt(SetRatesLB.SelectedIndex);
         }
 
